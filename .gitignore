@@ -1,0 +1,13 @@
+input/
+models/*
+output/
+runs/
+stubs/*
+training/people_and_volleyball-1
+training/volleyball-court-keypoints-1
+training/fasterrcnn_model.pth
+training/yolov5mu.pt
+training/yolov8m.pt
+yolov8l.pt
+
+.venv/
