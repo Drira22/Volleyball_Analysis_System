@@ -16,3 +16,5 @@ trackers/tracker_test.py
 2.png
 image1.jpg
 output_with_boxes.png
+training/vv_dataset_only_ball-2/
+bbox_output.png

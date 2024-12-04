@@ -5,18 +5,18 @@ import cv2
 import os
 
 
-def draw_court_box(frame, bbox):
+def draw_ball(frame, bbox):
     image = frame.copy()
     x_min, y_min, x_max, y_max, confidence, class_id = bbox
 
-    
+
     # Draw the bounding box
     x_min, y_min, x_max, y_max = map(int, [x_min, y_min, x_max, y_max])
-    label = f"volleyball-court {confidence:.0%}"
+    label = f"Ball {confidence:.0%}"
     color = (255, 255, 0)
 
-    # Draw the rectangle
-    cv2.rectangle(image, (x_min, y_min), (x_max, y_max), color, 3)
+    # Draw rectangle
+    cv2.rectangle(image, (x_min, y_min), (x_max, y_max), color, 1)
 
     # Add label
     font_scale = 1
@@ -32,14 +32,14 @@ def draw_court_box(frame, bbox):
 
 if __name__ == '__main__':
     # Load the YOLOv8 model
-    model = YOLO('models/court/best.pt')
+    model = YOLO('models/ball/best.pt')
 
     # Move model to GPU if available
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model.to(device)
     print(f"Model is using device: {device}")
-
-    input_video = "input/rally_men.mp4"
+    
+    input_video = "input/videoplayback-1.mp4"
     output_image = "processed_frame.jpg"
 
 
@@ -54,12 +54,12 @@ if __name__ == '__main__':
         # Process results for the first frame only
         if len(results[0].boxes): 
             for box in results[0].boxes.data.cpu().numpy():
-                frame = draw_court_box(frame, box)
+                frame = draw_ball(frame, box)
         
         frames.append(frame)
         print(f"Saved processed frame number {i}")
     
-    save_video(frames,'output/court.avi')
+    save_video(frames,'output/ball.avi')
     
 
 

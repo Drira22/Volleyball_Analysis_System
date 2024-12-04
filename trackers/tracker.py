@@ -34,7 +34,7 @@ class Tracker:
         
         for i in range(0,len(frames),batch_size):
         
-            detections_batch = self.model.predict(frames[i:i+batch_size],conf=0.1)
+            detections_batch = self.model.predict(frames[i:i+batch_size],conf=0.3)
             detections+=detections_batch
         
         return detections
@@ -51,11 +51,11 @@ class Tracker:
 
         #extract the frames and make them in the object detections
         detections=self.detect_frames(frames)
+        print(detections[0])
 
         #tracks is the final result we want to detect at each fram the bboxs with appropriate label
         tracks = {
-            "people":[],
-            "volleyball":[]
+            "player":[],
         }
 
         for frame_num,detection in enumerate(detections):
@@ -69,8 +69,7 @@ class Tracker:
             detection_with_tracks = self.tracker.update_with_detections(detection_supervision)
 
             
-            tracks["people"].append({})
-            tracks["volleyball"].append({})
+            tracks["player"].append({})
 
             for frame_detection in detection_with_tracks:
                 bbox = frame_detection[0].tolist()
@@ -79,20 +78,15 @@ class Tracker:
                 
                 #no need to track the volleyball because it s one ball so the boundary box is teh same 
                 #add the boundary box of a player in this frame number 
-                if cls_id == cls_name_inv["people"]:
-                    tracks["people"][frame_num][track_id] = {"bbox":bbox}
+                if cls_id == cls_name_inv["player"]:
+                    tracks["player"][frame_num][track_id] = {"bbox":bbox}
                     # tracks={"people":[
                     #                   { 0:{"bbox":{[0,0,0,0]}} , 14:{"bbox":{[0,0,0,0]}} , 21:{"bbox":{[0,0,0,0]}} }, this with index 0 refers to frame_num 0 
                     #                   { 10:{"bbox":{[0,0,0,0]}} , 15:{"bbox":{[0,0,0,0]}} , 24:{"bbox":{[0,0,0,0]}} } ,and so on with frame numbers 
                     #                   ]}
 
             
-            #add the boundary box of the balvolleyball in this frame number from 
-            for frame_detection in detection_supervision:
-                bbox= frame_detection[0].tolist()   
-                cls_id = frame_detection[3]
-                if cls_id == cls_name_inv["volleyball"]:
-                    tracks["volleyball"][frame_num][1] = {"bbox":bbox}
+
 
         #save the results to stub_path as pickle 
         if stub_path is not None:
@@ -195,22 +189,15 @@ class Tracker:
         for frame_num,frame in enumerate(video_frames):
             frame = frame.copy()
 
-            people_dict = tracks["people"][frame_num]
-            volleyball_dict = tracks["volleyball"][frame_num]
+            player_dict = tracks["player"][frame_num]
 
 
             #Draw Players
-            for track_id,people in people_dict.items():
+            for track_id,people in player_dict.items():
                
                 frame = self.draw_ellipse(frame,people["bbox"],(0,0,255),track_id)
 
-           
 
-            #Draw ball
-            for track_id,volleyball in volleyball_dict.items():
-                frame= self.draw_triangle(frame,volleyball["bbox"],(0,255,0))
-
-            
             output_video_frames.append(frame)
 
         return output_video_frames
