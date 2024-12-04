@@ -20,7 +20,7 @@ class Court:
     def draw_court_box(self, frame, bbox):
         image = frame.copy()
         x_min, y_min, x_max, y_max, confidence, class_id = bbox
-        if confidence>0.85:
+        if confidence>0.5:
             # Draw the bounding box
             x_min, y_min, x_max, y_max = map(int, [x_min, y_min, x_max, y_max])
             label = f"volleyball-court {confidence:.0%}"
